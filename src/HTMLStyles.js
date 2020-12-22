@@ -1,13 +1,5 @@
-import {
-  PERC_SUPPORTED_STYLES,
-  STYLESETS,
-  ABSOLUTE_FONT_SIZE,
-  stylePropTypes,
-} from "./HTMLUtils";
-import {
-  generateDefaultBlockStyles,
-  generateDefaultTextStyles,
-} from "./HTMLDefaultStyles";
+import { PERC_SUPPORTED_STYLES, STYLESETS, ABSOLUTE_FONT_SIZE, stylePropTypes } from "./HTMLUtils";
+import { generateDefaultBlockStyles, generateDefaultTextStyles } from "./HTMLDefaultStyles";
 
 /**
  * Converts a html style string to an object
@@ -70,9 +62,7 @@ export function constructStyles({
   ];
 
   if (additionalStyles) {
-    style = style.concat(
-      !additionalStyles.length ? [additionalStyles] : additionalStyles
-    );
+    style = style.concat(!additionalStyles.length ? [additionalStyles] : additionalStyles);
   }
 
   return style.filter((s) => s !== undefined);
@@ -116,9 +106,7 @@ function _recursivelyComputeParentTextStyles(element, passProps, styles = []) {
 
   // Construct every style for this node
   const HTMLAttribsStyles =
-    attribs && attribs.style
-      ? cssStringToRNStyle(attribs.style, STYLESETS.TEXT, passProps)
-      : {};
+    attribs && attribs.style ? cssStringToRNStyle(attribs.style, STYLESETS.TEXT, passProps) : {};
   const classStyles = getElementClassStyles(attribs, classesStyles);
   const userTagStyles = tagsStyles[name];
   const defaultTagStyles = defaultTextStyles[name];
@@ -135,11 +123,7 @@ function _recursivelyComputeParentTextStyles(element, passProps, styles = []) {
 
   if (element.parent) {
     // Keep looping recursively if this node has parents
-    return _recursivelyComputeParentTextStyles(
-      element.parent,
-      passProps,
-      styles
-    );
+    return _recursivelyComputeParentTextStyles(element.parent, passProps, styles);
   } else {
     return styles;
   }
@@ -183,11 +167,7 @@ export function getElementCSSClasses(htmlAttribs) {
  * @param {object} { parentTag, emSize, ignoredStyles }
  * @returns {object}
  */
-function cssToRNStyle(
-  css,
-  styleset,
-  { emSize, ptSize, ignoredStyles, allowedStyles }
-) {
+function cssToRNStyle(css, styleset, { emSize, ptSize, ignoredStyles, allowedStyles }) {
   const styleProps = stylePropTypes[styleset];
   return Object.keys(css)
     .filter((key) => (allowedStyles ? allowedStyles.indexOf(key) !== -1 : true))
@@ -198,9 +178,7 @@ function cssToRNStyle(
       return [
         key
           .split("-")
-          .map((item, index) =>
-            index === 0 ? item : item[0].toUpperCase() + item.substr(1)
-          )
+          .map((item, index) => (index === 0 ? item : item[0] ? item[0].toUpperCase() : "" + item.substr(1)))
           .join(""),
         value,
       ];
@@ -215,9 +193,7 @@ function cssToRNStyle(
           return [key, "flex"];
         }
         if (key === "textAlign") {
-          if (
-            ["left", "right", "justify", "auto", "center"].indexOf(value) !== -1
-          ) {
+          if (["left", "right", "justify", "auto", "center"].indexOf(value) !== -1) {
             return [key, value];
           }
           if (value === "start") {
@@ -228,18 +204,11 @@ function cssToRNStyle(
           }
           return undefined;
         }
-        if (
-          value
-            .replace(/[-_]/g, "")
-            .search(/\binherit\b|\bnormal\b|\bnone\b|(calc|var)\(.*\)/) !== -1
-        ) {
+        if (value.replace(/[-_]/g, "").search(/\binherit\b|\bnormal\b|\bnone\b|(calc|var)\(.*\)/) !== -1) {
           return undefined;
         }
         // See if we can use the percentage directly
-        if (
-          value.search(/[\d.]+%/) !== -1 &&
-          PERC_SUPPORTED_STYLES.indexOf(key) !== -1
-        ) {
+        if (value.search(/[\d.]+%/) !== -1 && PERC_SUPPORTED_STYLES.indexOf(key) !== -1) {
           return [key, value];
         }
         if (value.search(/[\d.]+em/) !== -1) {
